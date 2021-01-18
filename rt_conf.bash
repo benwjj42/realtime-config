@@ -163,7 +163,7 @@ function debian_pkgs
     printf "Removing .... %s\n" ${remove_pkg_name}
     ${SUDO_CMD} apt remove -y postfix sendmail cups
     printf "Installing .... ethtool\n";
-    ${SUDO_CMD} apt install -y aptitude ethtool build-essential libnuma-dev 
+    ${SUDO_CMD} apt install -y aptitude ethtool build-essential libnuma-dev tuned sysstat
 }
 
 
@@ -179,7 +179,7 @@ function boot_parameters_conf
     # * Red Hat Enterprise Linux for Real Time 7 Tuning Guide
     # * https://gist.github.com/wmealing/2dd2b543c4d3cff6cab7
 
-    local rt_boot_parameter="idle=poll intel_idle.max_cstate=0 processor.max_cstate=1 skew_tick=1"
+    local rt_boot_parameter="idle=poll intel_idle.max_cstate=0 processor.max_cstate=1 skew_tick=1 isolcpus=1"
 
     existent_cmdline=${grub_cmdline_linux}
     drop_cmdline_linux="${rt_boot_parameter}"
@@ -217,8 +217,9 @@ function printf_tee
 
 function tuned_configure
 {
-    
-    local target="/etc/tuned/realtime-variables.conf"
+    local target_dir="/etc/tuned"
+	${SUDO_CMD} mkdir $target_dir 
+    local target="$target_dir/realtime-variables.conf"
     local rule="isolated_cores=0"
 
     printf_tee "$rule" "$target";
@@ -240,6 +241,15 @@ case "$dist" in
 	boot_parameters_conf
 	${SUDO_CMD} update-grub
 	;;
+    *"buster"*)
+    if [ "$ANSWER" == "NO" ]; then
+        yes_or_no_to_go "Debian Stretch 10 is detected as $dist"
+    fi
+    debian_pkgs
+    debian_rt_conf
+    boot_parameters_conf
+    ${SUDO_CMD} update-grub
+    ;;
     *"CentOS Linux 7"*)
 	if [ "$ANSWER" == "NO" ]; then
 	    yes_or_no_to_go "CentOS Linux 7 is detected as $dist"
