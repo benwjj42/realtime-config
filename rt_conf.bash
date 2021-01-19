@@ -164,6 +164,7 @@ function debian_pkgs
     ${SUDO_CMD} apt remove -y postfix sendmail cups
     printf "Installing .... ethtool\n";
     ${SUDO_CMD} apt install -y aptitude ethtool build-essential libnuma-dev sysstat
+    ${SUDO_CMD} systemctl disable irqbalance
 }
 
 
