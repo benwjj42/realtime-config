@@ -180,7 +180,7 @@ function boot_parameters_conf
     # * Red Hat Enterprise Linux for Real Time 7 Tuning Guide
     # * https://gist.github.com/wmealing/2dd2b543c4d3cff6cab7
 
-    local rt_boot_parameter="idle=poll intel_idle.max_cstate=0 processor.max_cstate=1 skew_tick=1 isolcpus=0"
+    local rt_boot_parameter="idle=poll intel_idle.max_cstate=0 processor.max_cstate=1 skew_tick=1 isolcpus=1 maxcpus=1"
 
     existent_cmdline=${grub_cmdline_linux}
     drop_cmdline_linux="${rt_boot_parameter}"
